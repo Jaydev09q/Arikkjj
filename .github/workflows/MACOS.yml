@@ -1,0 +1,23 @@
+name: UbuntuSSH
+
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9999
+    steps:
+    - name: Загрузка файлов.
+      run: |
+        wget -O ngrok.zip https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
+        wget -O start.sh https://raw.githubusercontent.com/GordiNoki/UbuntuTestVM/main/start.sh
+    - name: Распаковка Ngrok.
+      run: unzip ngrok.zip
+    - name: Подключение к учётной записи Ngrok.
+      run: ./ngrok authtoken $Env:NGROK_AUTH_TOKEN
+      env:
+        NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
+    - name: Включение доступа SSH.
+      run: sudo ufw allow ssh
+    - name: Подключение к VDS.
+      run: bash start.sh
